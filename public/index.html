@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO chat</title>
+</head>
+<body>
+   <ul id="messages"></ul>
+
+   <form onsubmit="return sendMessage()">
+    <input id="msg" autocomplete="off">
+    <button>Send</button>
+   </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        msg = document.getElementById("msg")
+        message = document.getElementById("messages")
+
+        const username = prompt("Please enter your name");
+        const room = "/" + prompt("please choose your group \n / \n js \n python")
+
+        const socket = io("http://localhost:5000", {
+            query: "room=" + room,
+        })
+
+        socket.on("message", (msg) => {
+            addMessage(msg)
+            window.scrollTo(0, document.body.scrollHeight)
+        })
+
+        function sendMessage(){
+            if (msg.value) {
+                socket.emit("message", username + " : " + msg.value)
+                msg.value = ""
+            }
+            return false
+        }
+
+        function addMessage(msg){
+            let li = document.createElement("li")
+            li.textContent = msg
+            document.getElementById("messages").appendChild(li)
+        }
+
+    </script>
+</body>
+</html>
